@@ -23,7 +23,7 @@ const addUserData = async (req, res) => {
     });
 
     await usersData.save();
-    console.log(usersData)
+    // console.log(usersData)
     res.status(200).json({ message: "Product added successfully", usersData });
   } catch (error) {
     console.error("Product not added!!!", error);

@@ -3,7 +3,7 @@ const callBackModel = require("../../models/callBackFormModel");
 
 const addCallBack = async (req, res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     const {
       name,
       phoneNumber,
@@ -27,7 +27,7 @@ const addCallBack = async (req, res) => {
     });
 
     await callBackdata.save();
-    console.log(callBackdata)
+    // console.log(callBackdata)
     res.status(200).json({ message: "user added successfully", callBackdata });
   } catch (error) {
     console.error("user not added!!!", error);

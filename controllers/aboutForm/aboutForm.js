@@ -2,7 +2,7 @@ const aboutFormModel = require("../../models/aboutFormModel");
 
 const addAboutForm = async (req, res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     const {
       name,
       phoneNumber,
@@ -22,7 +22,7 @@ const addAboutForm = async (req, res) => {
     });
 
     await aboutFormData.save();
-    console.log(aboutFormData)
+    // console.log(aboutFormData)
     res.status(200).json({ message: "data added successfully", aboutFormData });
   } catch (error) {
     console.error("data not added!!!", error);

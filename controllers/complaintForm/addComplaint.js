@@ -3,7 +3,7 @@ const complaintFormModel = require("../../models/complaintFormModel");
 
 const addComplaint = async (req, res) => {
   try {
-    console.log(req.body)
+    // console.log(req.body)
     const {
       name,
       email,
@@ -21,7 +21,7 @@ const addComplaint = async (req, res) => {
     });
 
     await complaintData.save();
-    console.log(complaintData)
+    // console.log(complaintData)
     res.status(200).json({ message: "complaint added successfully", complaintData });
   } catch (error) {
     console.error("complaint not added!!!", error);
