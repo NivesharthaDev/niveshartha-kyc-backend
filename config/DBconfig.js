@@ -6,7 +6,10 @@ const mongo_uri = process.env.MONGODB_URI;
 const connectDatabase = async () => {
   mongoose.set("strictQuery", false);
   await mongoose
-    .connect(mongo_uri)
+    .connect(mongo_uri,
+      {
+        useNewUrlParser: true,
+      })
 console.log("mongo db connected successfully")
 };
 
