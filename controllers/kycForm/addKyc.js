@@ -2,12 +2,6 @@ const kycModel = require("../../models/kycModel");
 
 const submitKyc = async (req, res) => {
   try {
-    const aadharFront = res.locals.aadharFrontUrl.aadharFrontName;
-    const aadharBack = res.locals.aadharBackUrl.aadharBackName;
-    const panCard = res.locals.panCardUrl.panCardName;
-    const photo = res.locals.photoUrl.photoName;
-    const signature = res.locals.signatureUrl.signatureName;
-    const jsonData = req.body.jsonData ? JSON.parse(req.body.jsonData) : {};
     const {
       name,
       email,
@@ -29,9 +23,13 @@ const submitKyc = async (req, res) => {
       pincode,
       state,
       country,
+      aadharFront,
+      aadharBack,
+      panCard,
+      photo,
+      signature,
       declaration,
-    } = jsonData;
-
+    } = req.body;
     const newKyc = await kycModel.create({
       name,
       email,
@@ -60,11 +58,9 @@ const submitKyc = async (req, res) => {
       signature,
       declaration,
     });
-
-    console.log(newKyc);
+    await newKyc.save();
     res.status(200).json({ message: "Kyc added successfully", newKyc });
   } catch (error) {
-    console.error("Kyc not added!!!", error);
     res.status(500).json({ error: "Kyc Not added" });
   }
 };

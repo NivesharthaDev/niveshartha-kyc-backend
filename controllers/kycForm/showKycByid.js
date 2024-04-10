@@ -2,15 +2,14 @@ const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
 const kycModel = require("../../models/kycModel");
+const { Buffer } = require("buffer");
 
 const showKycByid = async (req, res) => {
   try {
     const id = req.params.id;
 
-    // Retrieve the KYC document from the database
     const kycData = await kycModel.findById(id);
-    // console.log("kycData", kycData);
-    // Create a new PDF document
+
     const doc = new PDFDocument();
 
     // Center the image at the top of the page
@@ -27,83 +26,32 @@ const showKycByid = async (req, res) => {
       .fontSize(22)
       .fillColor("#28AB9E")
       .text("KYC Details", { align: "center" });
-    // doc.moveDown();
 
     // Reset styling to default for the rest of the document
     doc.font("Helvetica").fontSize(12).fillColor("black");
 
     // Add specific details to the PDF in text data format
-
     if (kycData) {
       const keys = Object.keys(kycData.toObject());
 
       keys.forEach((key) => {
         const value = kycData[key] || "N/A";
-
-        // console.log("value", key);
-        if (key == "aadharFront") {
-          doc.fontSize(10).text(`Adhar Front :- `);
-          doc.moveDown();
-
-          doc.image(
-            path.join(
-              __dirname,
-              `../../assets/pdfFiles/${kycData.aadharFront}`
-            ),
-
-            { width: 500, height: 250 }
-          );
-          // doc.fontSize(8).text(`Adhar Number: ${value}`);
-          doc.moveDown();
-          // doc.moveDown();
-        }
-        if (key == "aadharBack") {
-          doc.fontSize(10).text(`Adhar Back :- `);
-          doc.moveDown();
-          doc.image(
-            path.join(__dirname, `../../assets/pdfFiles/${kycData.aadharBack}`),
-            { width: 500, height: 250 }
-          );
-          doc.moveDown();
-          // doc.moveDown();
-        }
-
-        if (key == "panCard") {
-          doc.fontSize(10).text(`PanCard :- `);
-          doc.moveDown();
-          doc.image(
-            path.join(__dirname, `../../assets/pdfFiles/${kycData.panCard}`),
-            { width: 500, height: 250 }
-          );
-          doc.moveDown();
-          doc.moveDown();
-        }
-        if (key == "photo") {
-          doc.fontSize(10).text(`Photo :- `);
-          doc.moveDown();
-          doc.image(
-            path.join(__dirname, `../../assets/pdfFiles/${kycData.photo}`),
-            { width: 500, height: 250 }
-          );
-          doc.moveDown();
-          doc.moveDown();
-          doc.moveDown();
-          doc.moveDown();
-          doc.moveDown();
-          doc.moveDown();
-          // doc.moveDown();
-        }
-        if (key == "signature") {
-          doc.fontSize(10).text(`Signature :- `);
-          doc.moveDown();
-          doc.image(
-            path.join(__dirname, `../../assets/pdfFiles/${kycData.signature}`),
-            { width: 500, height: 250 }
-          );
-          doc.moveDown();
-          // doc.moveDown();
+        if (
+          key === "aadharFront" ||
+          key === "aadharBack" ||
+          key === "panCard" ||
+          key === "photo" ||
+          key === "signature"
+        ) {
+          // Decode base64 image
+          const base64Image = value.split(";base64,").pop();
+          const imageBuffer = Buffer.from(base64Image, "base64");
+          // Embed image into PDF
+          doc.image(imageBuffer, { width: 500, height: 250 });
+          // doc.moveDown(6);
+          // doc.addPage();
+          doc.addPage();
         } else {
-          // doc.fontSize(8).text(`${key}: ${value}`);
           switch (key) {
             case "name":
               doc.fontSize(10).text(`Name :- ${value}`);
@@ -185,25 +133,12 @@ const showKycByid = async (req, res) => {
               doc.fontSize(10).text(`Country :- ${value}`);
               doc.moveDown();
               break;
-
-            // case "aadharFront":
-            //   doc.fontSize(10).text(`Adhar Front : `);
-            //   doc.moveDown();
-            //   break;
-            // case "aadharBack":
-            //   doc.fontSize(10).text(`Adhar Back : `);
-            //   doc.moveDown();
-            //   // doc.addPage()
-            //   break;
             default:
               break;
           }
         }
-        doc.moveDown(); // Add space after each line
+        doc.moveDown();
       });
-
-      // Add a new line for better separation
-      // doc.moveDown();
     } else {
       doc.fontSize(14).text("No KYC data available");
       doc.moveDown(); // Add space after the line
@@ -227,7 +162,7 @@ const showKycByid = async (req, res) => {
     // Send the PDF as a response to the client
     stream.on("finish", () => {
       res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(  
+      res.setHeader(
         "Content-Disposition",
         `attachment; filename=kycData_${this.name}.pdf`
       );
