@@ -86,7 +86,7 @@ const showKycByid = async (req, res) => {
               doc.moveDown();
               break;
             case "proofOfIdentity":
-              doc.fontSize(10).text(`Proof of Identity :- ${value}`);
+              doc.fontSize(10).text(`Passport / Voter ID Number:- ${value}`);
               doc.moveDown();
               break;
             case "aadharNumber":
